@@ -1,0 +1,64 @@
+@import "reset";
+
+.visuallyhidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap; /* added line */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.board {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.column {
+  flex: 1;
+  background-color: #f0f0f0;
+  padding: 10px;
+  margin: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  
+  ul {
+    list-style-type: none;
+  }
+}
+
+.card {
+  background-color: #fff;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-top: 25px solid #ccc;
+  border-radius: 3px;
+  cursor: pointer;
+  position: relative;
+
+  .delete {
+    border: 1px solid #777;
+    cursor: pointer;
+    position: absolute;
+    top: -19px;
+    right: 5px;
+    width: 10px;
+    height: 10px;
+    overflow: hidden;
+    padding-top: 10px;
+
+    &:after {
+      display: inline-block;
+      content: '\00d7';
+      position: absolute;
+      top: -1px;
+      right: 2px;
+    }
+  }
+}
