@@ -241,10 +241,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   switchBtn.addEventListener('click', () => {
     if (switchBtn.checked == true) {
-      layoutLabel.textContent = 'Portrait Layout';
+      layoutLabel.textContent = 'Portrait View';
       boardLayout.classList.add('vertical');
     } else if (switchBtn.checked == false) {
-      layoutLabel.textContent = 'Landscape Layout';
+      layoutLabel.textContent = 'Landscape View';
       boardLayout.classList.remove('vertical');
     }
   });

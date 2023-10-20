@@ -199,6 +199,11 @@ html {
 
 body {
   background-color: #e0e0e0;
+  opacity: 0;
+  animation-name: fade-in-slide;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: both;
+  animation-duration: 0.5s;
 }
 
 h1 {
@@ -213,12 +218,18 @@ h1 {
 }
 
 .layout {
+  display: none;
   float: right;
   padding: 20px;
   text-align: right;
 }
 .layout .label {
   display: block;
+}
+@media (min-width: 767px) {
+  .layout {
+    display: block;
+  }
 }
 
 .add-task {
@@ -265,10 +276,15 @@ h1 {
   }
   .board.vertical {
     flex-direction: column;
+    animation-name: fade-in-slide;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+    animation-duration: 0.5s;
   }
 }
 
 .column {
+  opacity: 0;
   flex: 1;
   background-color: #f0f0f0;
   border: 1px solid #ccc;
@@ -276,15 +292,19 @@ h1 {
   margin: 10px;
   border-radius: 3px;
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
+  animation-name: fade-in-slide;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+  animation-duration: 0.5s;
 }
 .column.todo h3 {
-  background-color: #FFB300;
+  background-color: #ffb300;
 }
 .column.in-progress h3 {
-  background-color: #29B6F6;
+  background-color: #29b6f6;
 }
 .column.done h3 {
-  background-color: #8BC34A;
+  background-color: #8bc34a;
 }
 .column h3 {
   padding: 10px;
@@ -303,6 +323,10 @@ h1 {
   cursor: pointer;
   position: relative;
   will-change: transform;
+  animation-name: fade-in;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+  animation-duration: 0.3s;
 }
 .task:hover, .task:focus {
   will-change: box-shadow;
@@ -387,4 +411,43 @@ h1 {
 }
 .switch > [type=checkbox]:focus + span {
   outline: -webkit-focus-ring-color auto 1px;
+}
+
+.column:nth-of-type(1) {
+  animation-delay: 0.6s;
+}
+
+.column:nth-of-type(2) {
+  animation-delay: 0.7s;
+}
+
+.column:nth-of-type(3) {
+  animation-delay: 0.8s;
+}
+
+.column:nth-of-type(4) {
+  animation-delay: 0.9s;
+}
+
+.column:nth-of-type(5) {
+  animation-delay: 1s;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes fade-in-slide {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }/*# sourceMappingURL=style.css.map */
