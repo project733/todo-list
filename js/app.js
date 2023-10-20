@@ -1,9 +1,13 @@
 "use strict";
 
 document.addEventListener("DOMContentLoaded", () => {
+  const layoutLabel = document.getElementById('label');
+  const switchBtn = document.getElementById('switch');
+  const boardLayout = document.getElementById('board');
   const taskInput = document.getElementById("task-input");
-  const addBtn = document.getElementById("add-task");
+  const addBtn = document.getElementById("add-task-btn");
   const colID = document.querySelectorAll(".column");
+  const totalTasks = document.querySelector('#task-total');
 
   // Initialize the Kanban board columns
   const columns = [];
@@ -14,47 +18,49 @@ document.addEventListener("DOMContentLoaded", () => {
 
   columns.forEach((column) => {
     const columnElement = document.getElementById(column);
+    columnElement.classList.add(column);
 
     // Enable drop event for columns
     columnElement.addEventListener("dragover", (e) => {
       e.preventDefault();
       e.dataTransfer.dropEffect = "move";
       const bottomTask = insertAboveTask(columnElement, e.clientY);
-      const curCard = document.querySelector('.is-dragging');
+      const curTask = document.querySelector(".is-dragging");
       const createUL = document.createElement("ul");
       createUL.setAttribute("role", "list");
       createUL.setAttribute("aria-dropeffect", "move");
-      const hasUL = columnElement.querySelector('ul');
+      const hasUL = columnElement.querySelector("ul");
 
       // Check if UL exists
       if (hasUL === null) {
-        columnElement.appendChild(createUL).appendChild(curCard);
+        columnElement.appendChild(createUL).appendChild(curTask);
       } else if (hasUL.childNodes.length === 0) {
         hasUL.remove();
-        columnElement.appendChild(createUL).appendChild(curCard);
+        columnElement.appendChild(createUL).appendChild(curTask);
       } else if (hasUL) {
         // Check position of task in vertical order
         if (!bottomTask) {
-          hasUL.appendChild(curCard);
+          hasUL.appendChild(curTask);
         } else {
-          hasUL.insertBefore(curCard, bottomTask);
+          hasUL.insertBefore(curTask, bottomTask);
         }
       }
     });
 
+    // Tracks position of dragged task
     const insertAboveTask = (zone, mouseY) => {
-      const elements = zone.querySelectorAll('.card:not(.is-dragging)');
+      const elements = zone.querySelectorAll(".task:not(.is-dragging)");
 
       let closestTask = null;
       let closestOffset = Number.NEGATIVE_INFINITY;
 
-      elements.forEach((card) => {
-        const { top } = card.getBoundingClientRect();
+      elements.forEach((task) => {
+        const { top } = task.getBoundingClientRect();
         const offset = mouseY - top;
 
         if (offset < 0 && offset > closestOffset) {
           closestOffset = offset;
-          closestTask = card;
+          closestTask = task;
         }
       });
 
@@ -64,101 +70,109 @@ document.addEventListener("DOMContentLoaded", () => {
     // Handle the drop event for columns
     columnElement.addEventListener("drop", (e) => {
       e.preventDefault();
-      const cardId = e.dataTransfer.getData("text/plain");
-      const card = document.getElementById(cardId);
+      const taskId = e.dataTransfer.getData("text/plain");
+      const task = document.getElementById(taskId);
       const createUL = document.createElement("ul");
       createUL.setAttribute("role", "list");
       createUL.setAttribute("aria-dropeffect", "move");
       const hasUL = columnElement.querySelector("ul");
       const bottomTask = insertAboveTask(columnElement, e.clientY);
-      const curCard = document.querySelector('.is-dragging');
+      const curTask = document.querySelector(".is-dragging");
+      let totalLI = hasUL.childNodes.length;
 
       // Check if UL exists
       if (hasUL === null) {
-        columnElement.appendChild(createUL).appendChild(card);
-      } else if (hasUL.childNodes.length === 0) {
+        columnElement.appendChild(createUL).appendChild(task);
+      } else if (totalLI === 0) {
         hasUL.remove();
-        columnElement.appendChild(createUL).appendChild(card);
+        columnElement.appendChild(createUL).appendChild(task);
       } else if (hasUL) {
         // Check position of task in vertical order
         if (!bottomTask) {
-          hasUL.appendChild(curCard);
+          hasUL.appendChild(curTask);
         } else {
-          hasUL.insertBefore(curCard, bottomTask);
+          hasUL.insertBefore(curTask, bottomTask);
         }
       }
 
+      columnElement.querySelector('#task-total').textContent = totalLI;
       saveState();
     });
 
+    // Track if UL exists and how many number of tasks exist from previous exited column
     columnElement.addEventListener("dragleave", (e) => {
       e.preventDefault();
-      let hasUL = columnElement.querySelector("ul");
 
+      // Delay to track correct previous state
       setTimeout(() => {
+        let hasUL = columnElement.querySelector("ul");
         if (hasUL && hasUL.childNodes.length === 0) {
+          hasUL.previousElementSibling.querySelector('#task-total').textContent = 0;
           hasUL.remove();
+        } else if (hasUL && hasUL.childNodes.length > 0) {
+          hasUL.previousElementSibling.querySelector('#task-total').textContent = hasUL.childNodes.length;
         }
+        
       }, 700);
 
       saveState();
     });
   });
 
-  // Initialize the Kanban board cards
-  const cards = JSON.parse(localStorage.getItem("taskList")) || [];
-  if (cards === "taskList") {
-    cards.forEach((card) => {
-      const cardElement = createCard(card);
-      document.getElementById(card.status).appendChild(cardElement);
+  // Initialize the Kanban board tasks
+  const tasks = JSON.parse(localStorage.getItem("taskList")) || [];
+  if (tasks === "taskList") {
+    tasks.forEach((task) => {
+      const taskElement = createTask(task);
+      document.getElementById(task.status).appendChild(taskElement);
     });
   }
 
-  // Create a new card
-  const createCard = (cardData) => {
-    const card = document.createElement("li");
-    card.id = cardData.id;
-    card.className = "card";
-    card.setAttribute("tabindex", "0");
-    card.setAttribute("role", "listitem");
-    card.setAttribute("aria-grabbed", "false");
-    card.draggable = true;
-    card.textContent = cardData.text;
+  // Create a new task
+  const createTask = (taskData) => {
+    const task = document.createElement("li");
+    task.id = taskData.id;
+    task.className = "task";
+    task.setAttribute("tabindex", "0");
+    task.setAttribute("role", "listitem");
+    task.setAttribute("aria-grabbed", "false");
+    task.draggable = true;
+    task.textContent = taskData.text;
 
-    // Enable the drag event for cards
-    card.addEventListener("dragstart", (e) => {
-      e.dataTransfer.setData("text/plain", card.id);
-      card.classList.add('is-dragging');
-      card.setAttribute("aria-grabbed", "true");
+    // Enable the drag event for tasks
+    task.addEventListener("dragstart", (e) => {
+      e.dataTransfer.setData("text/plain", task.id);
+      task.classList.add("is-dragging");
+      task.setAttribute("aria-grabbed", "true");
     });
 
-    card.addEventListener("dragend", (e) => {
+    task.addEventListener("dragend", (e) => {
       e.preventDefault();
-      card.classList.remove('is-dragging');
-      card.setAttribute("aria-grabbed", "false");
+      task.classList.remove("is-dragging");
+      task.setAttribute("aria-grabbed", "false");
     });
 
-    return card;
+    return task;
   };
 
   // Save the board state to local storage
   const saveState = () => {
-    const savedCards = columns.reduce((acc, column) => {
-      const cardsInColumn = Array.from(
-        document.getElementById(column).getElementsByClassName("card")
+    const savedTasks = columns.reduce((acc, column) => {
+      const tasksInColumn = Array.from(
+        document.getElementById(column).getElementsByClassName("task")
       );
       return acc.concat(
-        cardsInColumn.map((card) => ({
-          id: card.id,
-          text: card.textContent.replace("Delete task", ""),
+        tasksInColumn.map((task) => ({
+          id: task.id,
+          text: task.textContent.replace("Delete task", ""),
           status: column,
         }))
       );
     }, []);
-    localStorage.setItem("taskList", JSON.stringify(savedCards));
+    localStorage.setItem("taskList", JSON.stringify(savedTasks));
   };
 
-  // Add a new card when clicking on the board
+  // Add a new task when clicking on the board
   const addTaskHandler = () => {
     const text = taskInput.value;
     // Error checking
@@ -169,50 +183,69 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (text) {
       const id = new Date().getTime().toString();
-      const cardData = { id, text, status: "todo" };
-      const cardElement = createCard(cardData);
+      const taskData = { id, text, status: "todo" };
+      const taskElement = createTask(taskData);
       const createUL = document.createElement("ul");
       createUL.setAttribute("role", "list");
       createUL.setAttribute("aria-dropeffect", "move");
       const hasUL = document.querySelector("#todo ul");
 
-      const cardDelete = document.createElement("button");
-      cardDelete.className = "delete";
-      cardDelete.textContent = "Delete task";
+      const taskDelete = document.createElement("button");
+      taskDelete.className = "delete";
+      taskDelete.textContent = "Delete task";
 
       if (hasUL === null) {
         document
           .getElementById("todo")
           .appendChild(createUL)
-          .appendChild(cardElement);
+          .appendChild(taskElement);
       } else if (hasUL) {
-        hasUL.appendChild(cardElement);
+        hasUL.appendChild(taskElement);
       }
+
+      let totalLI = taskElement.parentNode.parentNode.querySelectorAll('li').length;
+      totalTasks.textContent = totalLI;
 
       saveState();
       taskInput.value = "";
 
-      document.getElementById(cardData.id).appendChild(cardDelete);
+      document.getElementById(taskData.id).appendChild(taskDelete);
 
-      // Delete functionality
-      cardDelete.addEventListener("click", () => {
-        let liCount =
-          cardDelete.parentNode.parentNode.querySelectorAll("li").length;
-        if (liCount > 1) {
-          cardDelete.parentNode.remove();
-        } else if (liCount === 1) {
-          cardDelete.parentNode.parentNode.remove();
+      // Delete task
+      taskDelete.addEventListener("click", () => {
+        const check = confirm("Would you like to delete the task?");
+
+        if (check) {
+          let liCount =
+            taskDelete.parentNode.parentNode.querySelectorAll("li").length;
+          taskDelete.parentNode.parentNode.previousElementSibling.querySelector('#task-total').textContent = liCount - 1;
+          
+          if (liCount > 1) {
+            taskDelete.parentNode.remove();
+          } else if (liCount === 1) {
+            taskDelete.parentNode.parentNode.remove();
+          }
+
+          saveState();
         }
-
-        saveState();
       });
     }
   };
 
   addBtn.addEventListener("click", addTaskHandler);
-  taskInput.addEventListener('keydown', (e) => {
-    if (e.code === 'Enter') {
-      addTaskHandler();
+  // taskInput.addEventListener("keydown", (e) => {
+  //   if (e.code === "Enter") {
+  //     addTaskHandler();
+  //   }
+  // });
+
+  switchBtn.addEventListener('click', () => {
+    if (switchBtn.checked == true) {
+      layoutLabel.textContent = 'Portrait Layout';
+      boardLayout.classList.add('vertical');
+    } else if (switchBtn.checked == false) {
+      layoutLabel.textContent = 'Landscape Layout';
+      boardLayout.classList.remove('vertical');
     }
   });
 });

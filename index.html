@@ -1,28 +1,59 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta
+      name="description"
+      content="Kanban style dashboard demo featuring drap and drop, delete and re-ordering functionality.  Added accessibility features ARIA attributes."
+    />
+    <meta
+      name="keywords"
+      content="javascript, kanban board, drop and drop, accessibility, aria features, sass"
+    />
     <title>Kanban board demo</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
     <script src="js/app.js" defer></script>
-</head>
-<body>
-    <div>
-      <input type="text" id="task-input" />
-      <button id="add-task">Add task</button>
+  </head>
+  <body>
+    <div class="top-row">
+      <h1>Kanban-style board</h1>
+      <div class="layout" id="layout">
+        <label>
+          <span class="label" id="label">Landscape Layout</span>
+          <div class="switch">
+            <input type="checkbox" role="switch" id="switch" />
+            <span aria-hidden="true"></span>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <div class="add-task">
+      <label>
+        <span class="label">Add new task</span>
+        <textarea id="task-input"></textarea>
+      </label>
+      <button id="add-task-btn">Add task</button>
     </div>
     <div class="board" id="board">
-        <div class="column" id="todo" role="region" aria-labelledby="task-todo">
-            <h3 id="task-todo">To Do</h3>
-        </div>
-        <div class="column" id="in-progress" role="region" aria-labelledby="task-inprogress">
-            <h3 id="task-inprogress">In Progress</h3>
-        </div>
-        <div class="column" id="done" role="region" aria-labelledby="task-done">
-            <h3 id="task-done">Done</h3>
-        </div>
+      <div class="column" id="todo" role="region" aria-labelledby="task-todo">
+        <h3 id="task-todo"><strong id="task-total">0</strong> To Do</h3>
+      </div>
+      <div
+        class="column"
+        id="in-progress"
+        role="region"
+        aria-labelledby="task-inprogress"
+      >
+        <h3 id="task-inprogress">
+          <strong id="task-total">0</strong> In Progress
+        </h3>
+      </div>
+      <div class="column" id="done" role="region" aria-labelledby="task-done">
+        <h3 id="task-done"><strong id="task-total">0</strong> Done</h3>
+      </div>
     </div>
-</body>
+  </body>
 </html>
