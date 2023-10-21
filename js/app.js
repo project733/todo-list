@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Tracks position of dragged task
+    // Logic to track position of dragged task closest to the bottom of the mouse
     const insertAboveTask = (zone, mouseY) => {
       const elements = zone.querySelectorAll(".task:not(.is-dragging)");
 

@@ -258,7 +258,7 @@ h1 {
 $animationDelay: 1;
 @for $i from 1 through 5 {
   .column:nth-of-type(#{$i}) {
-    animation-delay: #{0.5+ ($i)/10}s;
+    animation-delay: #{0.5+calc(($i) / 10)}s;
   }
 }
 
