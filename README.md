@@ -1,5 +1,6 @@
 # todo-list
 Simple Kanban-style task board demo
+* JavaScript (non-framework)
 
 ## Features
 * Drag and drop
