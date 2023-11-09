@@ -128,6 +128,9 @@ h1 {
   &.in-progress h3 {
     background-color: #29b6f6;
   }
+  &.blocked h3 {
+    background-color: #ff7b7b;
+  }
   &.done h3 {
     background-color: #8bc34a;
   }
